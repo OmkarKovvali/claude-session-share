@@ -12,7 +12,11 @@
     "test": "vitest run",
     "dev": "tsc --watch"
   },
-  "keywords": ["mcp", "claude", "session-sharing"],
+  "keywords": [
+    "mcp",
+    "claude",
+    "session-sharing"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
@@ -20,6 +24,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.10.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.16"
   }
 }
