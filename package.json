@@ -1,0 +1,25 @@
+{
+  "name": "claude-session-share",
+  "version": "0.1.0",
+  "description": "MCP server for sharing Claude Code sessions via links",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "claude-session-share": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "dev": "tsc --watch"
+  },
+  "keywords": ["mcp", "claude", "session-sharing"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.5",
+    "typescript": "^5.7.3"
+  }
+}
