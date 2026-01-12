@@ -9,6 +9,7 @@
 
 import * as path from 'node:path';
 import type { AssistantMessage, UserMessage, FileHistorySnapshot } from '../session/types.js';
+import { redactSecrets } from './redactor.js';
 
 /**
  * Sanitize assistant message by stripping thinking and sanitizing paths in tool results
@@ -23,7 +24,7 @@ export function sanitizeAssistantMessage(
       thinking: null, // Strip thinking block
       messages: msg.snapshot.messages.map((m) => ({
         ...m,
-        content: sanitizePathsInContent(m.content, basePath),
+        content: redactSecrets(sanitizePathsInContent(m.content, basePath)),
       })),
     },
   };
