@@ -44,7 +44,7 @@ export interface UserMessage extends BaseMessage {
  * Assistant thinking and response snapshot
  */
 export interface AssistantSnapshot {
-  thinking: string;
+  thinking: string | null;
   messages: Array<{
     role: string;
     content: string;
