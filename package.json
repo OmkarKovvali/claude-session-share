@@ -1,24 +1,47 @@
 {
   "name": "claude-session-share",
-  "version": "0.1.0",
-  "description": "MCP server for sharing Claude Code sessions via links",
+  "version": "1.0.0",
+  "description": "MCP server for sharing Claude Code sessions via GitHub Gist with privacy protection",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
     "claude-session-share": "dist/index.js"
   },
+  "files": [
+    "dist/**/*",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "vitest run",
-    "dev": "tsc --watch"
+    "dev": "tsc --watch",
+    "prepublishOnly": "npm run build && npm test"
   },
   "keywords": [
     "mcp",
+    "mcp-server",
     "claude",
-    "session-sharing"
+    "claude-code",
+    "session-sharing",
+    "github-gist",
+    "privacy",
+    "conversation-export",
+    "ai-tools"
   ],
-  "author": "",
+  "author": "Omkar Kovvali <okovvali5@gmail.com>",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OmkarKovvali/claude-session-share.git"
+  },
+  "bugs": {
+    "url": "https://github.com/OmkarKovvali/claude-session-share/issues"
+  },
+  "homepage": "https://github.com/OmkarKovvali/claude-session-share#readme",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.4",
     "octokit": "^5.0.5"
