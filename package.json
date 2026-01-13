@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "claude-session-share": "dist/index.js"
+    "claude-session-share": "dist/cli.js"
   },
   "files": [
     "dist/**/*",
