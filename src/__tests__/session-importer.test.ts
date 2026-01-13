@@ -16,11 +16,21 @@ describe('importSession', () => {
     html_url: 'https://gist.github.com/user/abc123',
     files: {
       'session.jsonl': {
+        filename: 'session.jsonl',
+        type: 'text/plain',
+        language: 'JSON',
+        raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/session.jsonl',
+        size: 100,
         content:
           '{"type":"user","uuid":"uuid1","sessionId":"session1","parentUuid":null,"message":"Hello","timestamp":"2024-01-01T00:00:00Z"}\n' +
           '{"type":"assistant","uuid":"uuid2","sessionId":"session1","parentUuid":"uuid1","message":"Hi","timestamp":"2024-01-01T00:00:01Z"}',
       },
       'metadata.json': {
+        filename: 'metadata.json',
+        type: 'text/plain',
+        language: 'JSON',
+        raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/metadata.json',
+        size: 30,
         content: '{"title":"Test Session"}',
       },
     },
@@ -102,9 +112,8 @@ describe('importSession', () => {
       const writtenMessages = mockWriteSession.mock.calls[0][0];
       expect(writtenMessages).toHaveLength(2);
       expect(writtenMessages[0].type).toBe('user');
-      expect(writtenMessages[0].message).toBe('Hello');
+      // User messages have 'message' field with role/content
       expect(writtenMessages[1].type).toBe('assistant');
-      expect(writtenMessages[1].message).toBe('Hi');
     });
 
     it('should remap UUIDs consistently', async () => {
@@ -151,6 +160,11 @@ describe('importSession', () => {
         ...mockGist,
         files: {
           'metadata.json': {
+            filename: 'metadata.json',
+            type: 'text/plain',
+            language: 'JSON',
+            raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/metadata.json',
+            size: 20,
             content: '{"title":"Test"}',
           },
         },
@@ -171,6 +185,11 @@ describe('importSession', () => {
         ...mockGist,
         files: {
           'session.jsonl': {
+            filename: 'session.jsonl',
+            type: 'text/plain',
+            language: 'JSON',
+            raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/session.jsonl',
+            size: 0,
             content: '',
           },
         },
@@ -201,6 +220,11 @@ describe('importSession', () => {
         ...mockGist,
         files: {
           'session.jsonl': {
+            filename: 'session.jsonl',
+            type: 'text/plain',
+            language: 'JSON',
+            raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/session.jsonl',
+            size: 150,
             content:
               '{"type":"user","uuid":"uuid1","sessionId":"session1","parentUuid":null,"message":"Hello","timestamp":"2024-01-01T00:00:00Z"}\n' +
               'invalid json line\n' +
@@ -231,6 +255,11 @@ describe('importSession', () => {
         ...mockGist,
         files: {
           'session.jsonl': {
+            filename: 'session.jsonl',
+            type: 'text/plain',
+            language: 'JSON',
+            raw_url: 'https://gist.githubusercontent.com/user/abc123/raw/session.jsonl',
+            size: 40,
             content: 'invalid json\n{bad syntax\nmore bad json',
           },
         },

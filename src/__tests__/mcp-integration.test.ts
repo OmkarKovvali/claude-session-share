@@ -310,10 +310,12 @@ describe('MCP import_session tool', () => {
 
   describe('validation', () => {
     it('should validate gistUrl is provided', () => {
-      const gistUrl = undefined;
-      const projectPath = '/Users/test/project';
+      const gistUrl: string | undefined = undefined;
 
-      if (!gistUrl || typeof gistUrl !== 'string' || gistUrl.trim() === '') {
+      // Validate as the handler does
+      const isValid = gistUrl && typeof gistUrl === 'string' && (gistUrl as string).trim() !== '';
+
+      if (!isValid) {
         const response = {
           content: [
             {
@@ -330,10 +332,12 @@ describe('MCP import_session tool', () => {
     });
 
     it('should validate projectPath is provided', () => {
-      const gistUrl = 'https://gist.github.com/user/abc123';
-      const projectPath = undefined;
+      const projectPath: string | undefined = undefined;
 
-      if (!projectPath || typeof projectPath !== 'string' || projectPath.trim() === '') {
+      // Validate as the handler does
+      const isValid = projectPath && typeof projectPath === 'string' && (projectPath as string).trim() !== '';
+
+      if (!isValid) {
         const response = {
           content: [
             {
@@ -351,9 +355,11 @@ describe('MCP import_session tool', () => {
 
     it('should reject empty gistUrl', () => {
       const gistUrl = '   ';
-      const projectPath = '/Users/test/project';
 
-      if (!gistUrl || typeof gistUrl !== 'string' || gistUrl.trim() === '') {
+      // Validate as the handler does
+      const isValid = gistUrl && typeof gistUrl === 'string' && (gistUrl as string).trim() !== '';
+
+      if (!isValid) {
         const response = {
           content: [
             {
@@ -369,10 +375,12 @@ describe('MCP import_session tool', () => {
     });
 
     it('should reject empty projectPath', () => {
-      const gistUrl = 'abc123';
       const projectPath = '';
 
-      if (!projectPath || typeof projectPath !== 'string' || projectPath.trim() === '') {
+      // Validate as the handler does
+      const isValid = projectPath && typeof projectPath === 'string' && (projectPath as string).trim() !== '';
+
+      if (!isValid) {
         const response = {
           content: [
             {
