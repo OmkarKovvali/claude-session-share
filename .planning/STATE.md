@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-11)
 ## Current Position
 
 Phase: 5 of 6 (Session Import)
-Plan: 1 of 2 in current phase
-Status: In progress
-Last activity: 2026-01-13 — Completed 05-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-01-12 — Completed 05-02-PLAN.md
 
-Progress: █████████████░ 70%
+Progress: ██████████████ 83%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 7
-- Average duration: 6 min
-- Total execution time: 0.7 hours
+- Total plans completed: 8
+- Average duration: 7 min
+- Total execution time: 0.9 hours
 
 **By Phase:**
 
@@ -31,11 +31,11 @@ Progress: █████████████░ 70%
 | 02-session-export | 2 | 8 min | 4 min |
 | 03-privacy-sanitization | 1 | 9 min | 9 min |
 | 04-gist-storage | 2 | 14 min | 7 min |
-| 05-session-import | 1 | 7 min | 7 min |
+| 05-session-import | 2 | 14 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 9min, 5min, 9min, 7min
-- Trend: Stable with variation based on complexity
+- Last 5 plans: 5min, 9min, 7min, 7min, 7min
+- Trend: Stable at ~7min per plan
 
 ## Accumulated Context
 
@@ -66,6 +66,9 @@ Recent decisions affecting current work:
 | 05-01 | String splitting for gist ID extraction | Simpler than regex, handles trailing slashes and edge cases more reliably |
 | 05-01 | Separate session filename UUID | New UUID for each import filename, independent of remapped message sessionIds |
 | 05-01 | Type assertions for union narrowing | Explicit type narrowing with `as UserMessage` for testing specific message types |
+| 05-02 | Per-line error recovery for JSONL | Don't fail entire import on individual parse errors - maximize data recovery |
+| 05-02 | Input validation before service call | Validate parameters explicitly for better error messages vs generic exceptions |
+| 05-02 | Success message with resume instructions | Include "Use 'claude --resume'" to guide users to next step |
 
 ### Deferred Issues
 
@@ -77,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-13T03:06:43Z
-Stopped at: Completed 05-01-PLAN.md
+Last session: 2026-01-12T22:22:00Z
+Stopped at: Completed 05-02-PLAN.md (Phase 5 complete)
 Resume file: None
