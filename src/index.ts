@@ -1,6 +1,16 @@
 #!/usr/bin/env node
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import {
+  CallToolRequestSchema,
+  ListToolsRequestSchema,
+} from "@modelcontextprotocol/sdk/types.js";
+import { uploadSession } from "./services/session-uploader.js";
+import { findSessionFiles } from "./session/finder.js";
+import { parseSessionFile } from "./session/reader.js";
+import { homedir } from 'os';
+import { join } from 'path';
+import { readdir, stat } from 'fs/promises';
 
 /**
  * MCP Server for Claude Code session sharing
@@ -22,10 +32,123 @@ const server = new Server(
   }
 );
 
-// TODO: Tool handlers will be added in Phase 2+
-// - share_session: Export current session to shareable format
-// - import_session: Import session from link/file
-// - list_sessions: Show available shared sessions
+/**
+ * Find the most recent session file
+ * Searches ~/.claude/projects/ for all session files and returns the most recently modified one
+ */
+async function findMostRecentSession(): Promise<string | null> {
+  const projectsDir = join(homedir(), '.claude', 'projects');
+
+  try {
+    // Get all subdirectories in ~/.claude/projects/
+    const entries = await readdir(projectsDir, { withFileTypes: true });
+    const dirs = entries.filter(e => e.isDirectory()).map(e => e.name);
+
+    let mostRecentFile: string | null = null;
+    let mostRecentTime = 0;
+
+    // Search each project directory for session files
+    for (const dir of dirs) {
+      const dirPath = join(projectsDir, dir);
+      try {
+        const files = await readdir(dirPath);
+
+        for (const file of files) {
+          if (file.endsWith('.jsonl')) {
+            const filePath = join(dirPath, file);
+            const stats = await stat(filePath);
+
+            if (stats.mtimeMs > mostRecentTime) {
+              mostRecentTime = stats.mtimeMs;
+              mostRecentFile = filePath;
+            }
+          }
+        }
+      } catch (err) {
+        // Skip directories we can't read
+        continue;
+      }
+    }
+
+    return mostRecentFile;
+  } catch (err) {
+    throw new Error(`Failed to find sessions: ${err instanceof Error ? err.message : String(err)}`);
+  }
+}
+
+/**
+ * List available tools
+ */
+server.setRequestHandler(ListToolsRequestSchema, async () => {
+  return {
+    tools: [
+      {
+        name: "share_session",
+        description: "Share a Claude Code session via GitHub Gist. Creates a sanitized, shareable link to the conversation.",
+        inputSchema: {
+          type: "object",
+          properties: {
+            sessionPath: {
+              type: "string",
+              description: "Optional path to session file. If not provided, shares the most recent session.",
+            },
+          },
+        },
+      },
+    ],
+  };
+});
+
+/**
+ * Handle tool execution
+ */
+server.setRequestHandler(CallToolRequestSchema, async (request) => {
+  if (request.params.name === "share_session") {
+    try {
+      const sessionPath = request.params.arguments?.sessionPath as string | undefined;
+
+      // If no sessionPath provided, find most recent session
+      const pathToShare = sessionPath || await findMostRecentSession();
+
+      if (!pathToShare) {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: No session files found. Please provide a session path or ensure you have Claude Code sessions in ~/.claude/projects/",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // Upload session and get gist URL
+      const gistUrl = await uploadSession(pathToShare);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Successfully shared session!\n\nGist URL: ${gistUrl}\n\nYou can share this URL with others to give them access to this conversation.`,
+          },
+        ],
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Failed to share session: ${errorMessage}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+
+  throw new Error(`Unknown tool: ${request.params.name}`);
+});
 
 /**
  * Start the server with stdio transport
