@@ -97,11 +97,11 @@ describe('UUIDMapper', () => {
       // Other fields should be preserved
       expect(remapped.type).toBe(original.type);
       expect(remapped.timestamp).toBe(original.timestamp);
-      expect(remapped.message).toEqual(original.message);
-      expect(remapped.cwd).toBe(original.cwd);
-      expect(remapped.version).toBe(original.version);
-      expect(remapped.gitBranch).toBe(original.gitBranch);
-      expect(remapped.isSidechain).toBe(original.isSidechain);
+      expect((remapped as UserMessage).message).toEqual(original.message);
+      expect((remapped as UserMessage).cwd).toBe(original.cwd);
+      expect((remapped as UserMessage).version).toBe(original.version);
+      expect((remapped as UserMessage).gitBranch).toBe(original.gitBranch);
+      expect((remapped as UserMessage).isSidechain).toBe(original.isSidechain);
     });
 
     it('should remap UUIDs in an assistant message', () => {
@@ -130,8 +130,8 @@ describe('UUIDMapper', () => {
       // Other fields should be preserved
       expect(remapped.type).toBe(original.type);
       expect(remapped.timestamp).toBe(original.timestamp);
-      expect(remapped.messageId).toBe(original.messageId);
-      expect(remapped.snapshot).toEqual(original.snapshot);
+      expect((remapped as AssistantMessage).messageId).toBe(original.messageId);
+      expect((remapped as AssistantMessage).snapshot).toEqual(original.snapshot);
     });
 
     it('should remap UUIDs in a file-history-snapshot message', () => {
@@ -159,8 +159,8 @@ describe('UUIDMapper', () => {
       // Other fields should be preserved
       expect(remapped.type).toBe(original.type);
       expect(remapped.timestamp).toBe(original.timestamp);
-      expect(remapped.isSnapshotUpdate).toBe(original.isSnapshotUpdate);
-      expect(remapped.snapshot).toEqual(original.snapshot);
+      expect((remapped as FileHistorySnapshot).isSnapshotUpdate).toBe(original.isSnapshotUpdate);
+      expect((remapped as FileHistorySnapshot).snapshot).toEqual(original.snapshot);
     });
 
     it('should not mutate the original message (immutability)', () => {
