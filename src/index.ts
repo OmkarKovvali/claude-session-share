@@ -236,7 +236,13 @@ async function main() {
   console.error("Claude Session Share MCP server running on stdio");
 }
 
-main().catch((error) => {
-  console.error("Fatal error in main():", error);
-  process.exit(1);
-});
+// Export main for CLI mode, but also run if this is the entry point
+export default main;
+
+// Run main if this file is executed directly (not imported)
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((error) => {
+    console.error("Fatal error in main():", error);
+    process.exit(1);
+  });
+}
