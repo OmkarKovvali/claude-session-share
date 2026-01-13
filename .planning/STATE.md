@@ -9,19 +9,19 @@ See: .planning/PROJECT.md (updated 2026-01-11)
 
 ## Current Position
 
-Phase: 4 of 6 (Gist Storage)
-Plan: 2 of 2 in current phase
-Status: Complete
-Last activity: 2026-01-13 — Completed 04-02-PLAN.md
+Phase: 5 of 6 (Session Import)
+Plan: 1 of 2 in current phase
+Status: In progress
+Last activity: 2026-01-13 — Completed 05-01-PLAN.md
 
-Progress: ████████████ 67%
+Progress: █████████████░ 70%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 6
+- Total plans completed: 7
 - Average duration: 6 min
-- Total execution time: 0.6 hours
+- Total execution time: 0.7 hours
 
 **By Phase:**
 
@@ -31,9 +31,10 @@ Progress: ████████████ 67%
 | 02-session-export | 2 | 8 min | 4 min |
 | 03-privacy-sanitization | 1 | 9 min | 9 min |
 | 04-gist-storage | 2 | 14 min | 7 min |
+| 05-session-import | 1 | 7 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 5min, 9min, 5min, 9min
+- Last 5 plans: 9min, 5min, 9min, 7min
 - Trend: Stable with variation based on complexity
 
 ## Accumulated Context
@@ -62,6 +63,9 @@ Recent decisions affecting current work:
 | 04-02 | Service layer for uploadSession | Separates orchestration from MCP handler - enables reuse |
 | 04-02 | Auto most recent session selection | Improves UX by defaulting to likely choice |
 | 04-02 | Module-level vi.mock for classes | Cleaner than per-test mocking - handles constructors properly |
+| 05-01 | String splitting for gist ID extraction | Simpler than regex, handles trailing slashes and edge cases more reliably |
+| 05-01 | Separate session filename UUID | New UUID for each import filename, independent of remapped message sessionIds |
+| 05-01 | Type assertions for union narrowing | Explicit type narrowing with `as UserMessage` for testing specific message types |
 
 ### Deferred Issues
 
@@ -73,6 +77,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-13T02:49:24Z
-Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
+Last session: 2026-01-13T03:06:43Z
+Stopped at: Completed 05-01-PLAN.md
 Resume file: None
