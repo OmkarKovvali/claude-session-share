@@ -71,6 +71,214 @@ describe('GistClient', () => {
     });
   });
 
+  describe('fetchGist', () => {
+    beforeEach(() => {
+      process.env.GITHUB_TOKEN = 'ghp_test_token_1234567890';
+    });
+
+    it('should fetch a gist by ID successfully', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      const mockGet = vi.fn().mockResolvedValue({
+        data: {
+          id: 'abc123',
+          url: 'https://api.github.com/gists/abc123',
+          html_url: 'https://gist.github.com/user/abc123',
+          files: {
+            'session.jsonl': {
+              filename: 'session.jsonl',
+              type: 'application/jsonl',
+              language: 'JSON',
+              raw_url: 'https://gist.githubusercontent.com/raw/abc123/session.jsonl',
+              size: 1024,
+              content: '{"type":"user","uuid":"123"}\n{"type":"assistant","uuid":"456"}',
+            },
+          },
+          public: false,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          description: 'Session export',
+        },
+      });
+
+      octokit.rest.gists.get = mockGet as any;
+
+      const result = await client.fetchGist('abc123');
+
+      expect(result.id).toBe('abc123');
+      expect(result.html_url).toBe('https://gist.github.com/user/abc123');
+      expect(result.public).toBe(false);
+      expect(result.description).toBe('Session export');
+      expect(result.files['session.jsonl']).toBeDefined();
+      expect(result.files['session.jsonl'].content).toContain('type');
+
+      expect(mockGet).toHaveBeenCalledWith({
+        gist_id: 'abc123',
+      });
+    });
+
+    it('should extract gist ID from full URL', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      const mockGet = vi.fn().mockResolvedValue({
+        data: {
+          id: 'abc123def456',
+          url: 'https://api.github.com/gists/abc123def456',
+          html_url: 'https://gist.github.com/user/abc123def456',
+          files: {},
+          public: false,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          description: '',
+        },
+      });
+
+      octokit.rest.gists.get = mockGet as any;
+
+      await client.fetchGist('https://gist.github.com/username/abc123def456');
+
+      expect(mockGet).toHaveBeenCalledWith({
+        gist_id: 'abc123def456',
+      });
+    });
+
+    it('should handle gist URL with trailing slash', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      const mockGet = vi.fn().mockResolvedValue({
+        data: {
+          id: 'xyz789',
+          url: 'https://api.github.com/gists/xyz789',
+          html_url: 'https://gist.github.com/user/xyz789',
+          files: {},
+          public: false,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          description: '',
+        },
+      });
+
+      octokit.rest.gists.get = mockGet as any;
+
+      await client.fetchGist('https://gist.github.com/user/xyz789/');
+
+      // Should still extract xyz789 even with trailing slash
+      expect(mockGet).toHaveBeenCalledWith({
+        gist_id: 'xyz789',
+      });
+    });
+
+    it('should throw GistApiError on 404 (not found)', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      octokit.rest.gists.get = vi.fn().mockRejectedValue({
+        status: 404,
+        message: 'Not Found',
+      }) as any;
+
+      await expect(
+        client.fetchGist('nonexistent123')
+      ).rejects.toThrow(GistApiError);
+
+      await expect(
+        client.fetchGist('nonexistent123')
+      ).rejects.toThrow(/Gist not found: nonexistent123/);
+    });
+
+    it('should throw GistApiError on 403 (private/deleted gist)', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      octokit.rest.gists.get = vi.fn().mockRejectedValue({
+        status: 403,
+        message: 'Forbidden',
+      }) as any;
+
+      await expect(
+        client.fetchGist('private123')
+      ).rejects.toThrow(GistApiError);
+
+      await expect(
+        client.fetchGist('private123')
+      ).rejects.toThrow(/Access denied to gist private123/);
+    });
+
+    it('should throw GistApiError on 403 rate limit', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      octokit.rest.gists.get = vi.fn().mockRejectedValue({
+        status: 403,
+        message: 'API rate limit exceeded',
+      }) as any;
+
+      await expect(
+        client.fetchGist('abc123')
+      ).rejects.toThrow(GistApiError);
+
+      await expect(
+        client.fetchGist('abc123')
+      ).rejects.toThrow(/rate limit exceeded/);
+    });
+
+    it('should throw GistAuthError on 401 (invalid token)', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      octokit.rest.gists.get = vi.fn().mockRejectedValue({
+        status: 401,
+        message: 'Bad credentials',
+      }) as any;
+
+      await expect(
+        client.fetchGist('abc123')
+      ).rejects.toThrow(GistAuthError);
+
+      await expect(
+        client.fetchGist('abc123')
+      ).rejects.toThrow(/Invalid GITHUB_TOKEN/);
+    });
+
+    it('should extract content from files object', async () => {
+      const client = new GistClient();
+      const octokit = client.getOctokit();
+
+      const sessionContent = '{"type":"user","uuid":"123"}\n{"type":"assistant","uuid":"456"}';
+
+      const mockGet = vi.fn().mockResolvedValue({
+        data: {
+          id: 'abc123',
+          url: 'https://api.github.com/gists/abc123',
+          html_url: 'https://gist.github.com/abc123',
+          files: {
+            'session.jsonl': {
+              filename: 'session.jsonl',
+              type: 'application/jsonl',
+              language: 'JSON',
+              raw_url: 'https://gist.githubusercontent.com/raw/abc123/session.jsonl',
+              size: sessionContent.length,
+              content: sessionContent,
+            },
+          },
+          public: false,
+          created_at: '2024-01-01T00:00:00Z',
+          updated_at: '2024-01-01T00:00:00Z',
+          description: 'Test',
+        },
+      });
+
+      octokit.rest.gists.get = mockGet as any;
+
+      const result = await client.fetchGist('abc123');
+
+      expect(result.files['session.jsonl'].content).toBe(sessionContent);
+    });
+  });
+
   describe('createGist', () => {
     beforeEach(() => {
       process.env.GITHUB_TOKEN = 'ghp_test_token_1234567890';
