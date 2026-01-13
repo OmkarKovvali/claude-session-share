@@ -6,10 +6,14 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Mock uploadSession before importing index
+// Mock services before importing index
 const mockUploadSession = vi.fn();
+const mockImportSession = vi.fn();
 vi.mock('../services/session-uploader.js', () => ({
   uploadSession: mockUploadSession,
+}));
+vi.mock('../services/session-importer.js', () => ({
+  importSession: mockImportSession,
 }));
 
 describe('MCP share_session tool', () => {
@@ -195,6 +199,269 @@ describe('MCP share_session tool', () => {
       // This test verifies the index.ts module loads successfully
       const moduleImport = import('../index.js');
       await expect(moduleImport).resolves.toBeDefined();
+    });
+  });
+});
+
+describe('MCP import_session tool', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    process.env.GITHUB_TOKEN = 'test_token';
+  });
+
+  describe('tool schema', () => {
+    it('should have correct tool name', () => {
+      const toolSchema = {
+        name: 'import_session',
+        description: 'Import a shared Claude Code session from GitHub Gist URL or ID. Creates local resumable session in ~/.claude/projects/',
+        inputSchema: {
+          type: 'object',
+          properties: {
+            gistUrl: {
+              type: 'string',
+              description: 'GitHub Gist URL (https://gist.github.com/user/id) or bare gist ID',
+            },
+            projectPath: {
+              type: 'string',
+              description: 'Local project directory path where session will be imported (e.g., /Users/name/project)',
+            },
+          },
+          required: ['gistUrl', 'projectPath'],
+        },
+      };
+
+      expect(toolSchema.name).toBe('import_session');
+      expect(toolSchema.description).toContain('Import a shared Claude Code session');
+    });
+
+    it('should have gistUrl and projectPath parameters in schema', () => {
+      const inputSchema = {
+        type: 'object',
+        properties: {
+          gistUrl: {
+            type: 'string',
+            description: 'GitHub Gist URL (https://gist.github.com/user/id) or bare gist ID',
+          },
+          projectPath: {
+            type: 'string',
+            description: 'Local project directory path where session will be imported (e.g., /Users/name/project)',
+          },
+        },
+        required: ['gistUrl', 'projectPath'],
+      };
+
+      expect(inputSchema.properties.gistUrl.type).toBe('string');
+      expect(inputSchema.properties.projectPath.type).toBe('string');
+      expect(inputSchema.required).toContain('gistUrl');
+      expect(inputSchema.required).toContain('projectPath');
+    });
+  });
+
+  describe('tool execution', () => {
+    it('should call importSession with provided arguments', async () => {
+      const mockResult = {
+        sessionPath: '/Users/test/.claude/projects/encoded/session-id.jsonl',
+        sessionId: 'abc123',
+        messageCount: 10,
+        projectPath: '/Users/test/project',
+      };
+
+      mockImportSession.mockResolvedValue(mockResult);
+
+      const gistUrl = 'https://gist.github.com/user/abc123';
+      const projectPath = '/Users/test/project';
+      const result = await mockImportSession(gistUrl, projectPath);
+
+      expect(mockImportSession).toHaveBeenCalledWith(
+        'https://gist.github.com/user/abc123',
+        '/Users/test/project'
+      );
+      expect(result.sessionId).toBe('abc123');
+      expect(result.messageCount).toBe(10);
+    });
+
+    it('should format success response correctly', async () => {
+      const mockResult = {
+        sessionPath: '/Users/test/.claude/projects/encoded/session-id.jsonl',
+        sessionId: 'xyz789',
+        messageCount: 25,
+        projectPath: '/Users/test/my-project',
+      };
+
+      mockImportSession.mockResolvedValue(mockResult);
+
+      const result = await mockImportSession('gist-id', '/Users/test/my-project');
+
+      const response = {
+        content: [
+          {
+            type: 'text',
+            text: `Session imported successfully!\n\nSession ID: ${result.sessionId}\nMessages: ${result.messageCount}\nLocation: ${result.sessionPath}\n\nUse 'claude --resume' to see imported session.`,
+          },
+        ],
+      };
+
+      expect(response.content[0].text).toContain('Session imported successfully');
+      expect(response.content[0].text).toContain('Session ID: xyz789');
+      expect(response.content[0].text).toContain('Messages: 25');
+      expect(response.content[0].text).toContain('claude --resume');
+    });
+  });
+
+  describe('validation', () => {
+    it('should validate gistUrl is provided', () => {
+      const gistUrl = undefined;
+      const projectPath = '/Users/test/project';
+
+      if (!gistUrl || typeof gistUrl !== 'string' || gistUrl.trim() === '') {
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: 'Error: gistUrl is required and must be a non-empty string',
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+        expect(response.content[0].text).toContain('gistUrl is required');
+      }
+    });
+
+    it('should validate projectPath is provided', () => {
+      const gistUrl = 'https://gist.github.com/user/abc123';
+      const projectPath = undefined;
+
+      if (!projectPath || typeof projectPath !== 'string' || projectPath.trim() === '') {
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: 'Error: projectPath is required and must be a non-empty string',
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+        expect(response.content[0].text).toContain('projectPath is required');
+      }
+    });
+
+    it('should reject empty gistUrl', () => {
+      const gistUrl = '   ';
+      const projectPath = '/Users/test/project';
+
+      if (!gistUrl || typeof gistUrl !== 'string' || gistUrl.trim() === '') {
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: 'Error: gistUrl is required and must be a non-empty string',
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+      }
+    });
+
+    it('should reject empty projectPath', () => {
+      const gistUrl = 'abc123';
+      const projectPath = '';
+
+      if (!projectPath || typeof projectPath !== 'string' || projectPath.trim() === '') {
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: 'Error: projectPath is required and must be a non-empty string',
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+      }
+    });
+  });
+
+  describe('error handling', () => {
+    it('should handle importSession errors', async () => {
+      mockImportSession.mockRejectedValue(new Error('Gist not found'));
+
+      try {
+        await mockImportSession('nonexistent', '/Users/test/project');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: `Import failed: ${errorMessage}`,
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+        expect(response.content[0].text).toContain('Import failed');
+        expect(response.content[0].text).toContain('Gist not found');
+      }
+    });
+
+    it('should format error response with isError flag', async () => {
+      mockImportSession.mockRejectedValue(new Error('Permission denied'));
+
+      try {
+        await mockImportSession('abc123', '/restricted/path');
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        const response = {
+          content: [
+            {
+              type: 'text',
+              text: `Import failed: ${errorMessage}`,
+            },
+          ],
+          isError: true,
+        };
+
+        expect(response.isError).toBe(true);
+        expect(response.content[0].text).toContain('Permission denied');
+      }
+    });
+  });
+
+  describe('response format', () => {
+    it('should return proper MCP tool response structure', async () => {
+      const mockResult = {
+        sessionPath: '/Users/test/.claude/projects/encoded/session-id.jsonl',
+        sessionId: 'def456',
+        messageCount: 15,
+        projectPath: '/Users/test/project',
+      };
+
+      mockImportSession.mockResolvedValue(mockResult);
+
+      const result = await mockImportSession('gist-url', '/Users/test/project');
+
+      const response = {
+        content: [
+          {
+            type: 'text',
+            text: `Session imported successfully!\n\nSession ID: ${result.sessionId}\nMessages: ${result.messageCount}\nLocation: ${result.sessionPath}\n\nUse 'claude --resume' to see imported session.`,
+          },
+        ],
+      };
+
+      expect(response).toHaveProperty('content');
+      expect(Array.isArray(response.content)).toBe(true);
+      expect(response.content[0]).toHaveProperty('type', 'text');
+      expect(response.content[0]).toHaveProperty('text');
+      expect(response).not.toHaveProperty('isError'); // Success case doesn't have isError
     });
   });
 });

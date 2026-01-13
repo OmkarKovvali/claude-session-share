@@ -6,6 +6,7 @@ import {
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { uploadSession } from "./services/session-uploader.js";
+import { importSession } from "./services/session-importer.js";
 import { findSessionFiles } from "./session/finder.js";
 import { parseSessionFile } from "./session/reader.js";
 import { homedir } from 'os';
@@ -95,6 +96,24 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
           },
         },
       },
+      {
+        name: "import_session",
+        description: "Import a shared Claude Code session from GitHub Gist URL or ID. Creates local resumable session in ~/.claude/projects/",
+        inputSchema: {
+          type: "object",
+          properties: {
+            gistUrl: {
+              type: "string",
+              description: "GitHub Gist URL (https://gist.github.com/user/id) or bare gist ID",
+            },
+            projectPath: {
+              type: "string",
+              description: "Local project directory path where session will be imported (e.g., /Users/name/project)",
+            },
+          },
+          required: ["gistUrl", "projectPath"],
+        },
+      },
     ],
   };
 });
@@ -140,6 +159,61 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
           {
             type: "text",
             text: `Failed to share session: ${errorMessage}`,
+          },
+        ],
+        isError: true,
+      };
+    }
+  }
+
+  if (request.params.name === "import_session") {
+    try {
+      const gistUrl = request.params.arguments?.gistUrl as string | undefined;
+      const projectPath = request.params.arguments?.projectPath as string | undefined;
+
+      // Validate inputs
+      if (!gistUrl || typeof gistUrl !== 'string' || gistUrl.trim() === '') {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: gistUrl is required and must be a non-empty string",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      if (!projectPath || typeof projectPath !== 'string' || projectPath.trim() === '') {
+        return {
+          content: [
+            {
+              type: "text",
+              text: "Error: projectPath is required and must be a non-empty string",
+            },
+          ],
+          isError: true,
+        };
+      }
+
+      // Import session
+      const result = await importSession(gistUrl, projectPath);
+
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Session imported successfully!\n\nSession ID: ${result.sessionId}\nMessages: ${result.messageCount}\nLocation: ${result.sessionPath}\n\nUse 'claude --resume' to see imported session.`,
+          },
+        ],
+      };
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      return {
+        content: [
+          {
+            type: "text",
+            text: `Import failed: ${errorMessage}`,
           },
         ],
         isError: true,
