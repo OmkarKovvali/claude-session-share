@@ -74,7 +74,7 @@ claude  # Start Claude Code
 
 ## 🚀 Usage
 
-### Sharing a Session
+### Option A: Natural Language (via MCP)
 
 In any Claude Code conversation, simply say:
 
@@ -97,7 +97,7 @@ Share this link with anyone. They can import it with:
 "Import session from https://gist.github.com/username/abc123..."
 ```
 
-### Importing a Session
+#### Importing via MCP
 
 To import a shared session:
 
@@ -110,6 +110,34 @@ Claude will:
 2. Remap UUIDs to avoid conflicts
 3. Write to your local `.claude/projects/` directory
 4. Make it available for resuming
+
+### Option B: Command Line (Standalone CLI)
+
+You can also use the CLI directly without Claude Code:
+
+#### Share a session
+
+```bash
+# Share most recent session
+npx claude-session-share share
+
+# Share specific session file
+npx claude-session-share share --session-path ~/.claude/projects/abc/session.jsonl
+```
+
+#### Import a session
+
+```bash
+# Import to current directory
+npx claude-session-share import https://gist.github.com/user/abc123
+
+# Import to specific directory
+npx claude-session-share import abc123 --project-path /Users/name/project
+```
+
+**CLI flags:**
+- `--session-path <path>` - Specific session file to share (default: most recent)
+- `--project-path <path>` - Target directory for import (default: current directory)
 
 ### Resuming an Imported Session
 
