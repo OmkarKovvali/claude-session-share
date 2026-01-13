@@ -15,7 +15,7 @@ None
 - [x] **Phase 3: Privacy Sanitization** - Strip thinking blocks, sanitize paths, redact secrets (Completed: 2026-01-12)
 - [x] **Phase 4: Gist Storage** - GitHub Gist integration for sharing (Completed: 2026-01-13)
 - [x] **Phase 5: Session Import** - Import sessions with UUID remapping and local storage (Completed: 2026-01-12)
-- [ ] **Phase 6: End-to-End Verification** - Round-trip testing and `claude --resume` integration
+- [x] **Phase 6: End-to-End Verification** - Round-trip testing and `claude --resume` integration (Completed: 2026-01-13)
 
 ## Phase Details
 
@@ -73,10 +73,10 @@ Plans:
 **Goal**: Verify imported sessions appear in `claude --resume` and are fully resumable
 **Depends on**: Phase 5
 **Research**: Unlikely (testing existing functionality)
-**Plans**: TBD
+**Status**: ✅ Complete (2026-01-13)
 
 Plans:
-- TBD (will be defined during phase planning)
+- [x] 06-01: End-to-end integration tests and manual verification (1/1 complete - 41min)
 
 ## Progress
 
@@ -87,4 +87,6 @@ Plans:
 | 3. Privacy Sanitization | 1/1 | Complete | 2026-01-12 |
 | 4. Gist Storage | 2/2 | Complete | 2026-01-13 |
 | 5. Session Import | 2/2 | Complete | 2026-01-12 |
-| 6. End-to-End Verification | 0/TBD | Not started | - |
+| 6. End-to-End Verification | 1/1 | Complete | 2026-01-13 |
+
+**All 6 phases complete! 🎉**
