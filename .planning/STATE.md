@@ -10,18 +10,18 @@ See: .planning/PROJECT.md (updated 2026-01-11)
 ## Current Position
 
 Phase: 4 of 6 (Gist Storage)
-Plan: 1 of TBD in current phase
-Status: In progress
-Last activity: 2026-01-12 — Completed 04-01-PLAN.md
+Plan: 2 of 2 in current phase
+Status: Complete
+Last activity: 2026-01-13 — Completed 04-02-PLAN.md
 
-Progress: ██████████░ 50%
+Progress: ████████████ 67%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 5
-- Average duration: 5 min
-- Total execution time: 0.45 hours
+- Total plans completed: 6
+- Average duration: 6 min
+- Total execution time: 0.6 hours
 
 **By Phase:**
 
@@ -30,10 +30,10 @@ Progress: ██████████░ 50%
 | 01-foundation | 1 | 5 min | 5 min |
 | 02-session-export | 2 | 8 min | 4 min |
 | 03-privacy-sanitization | 1 | 9 min | 9 min |
-| 04-gist-storage | 1 | 5 min | 5 min |
+| 04-gist-storage | 2 | 14 min | 7 min |
 
 **Recent Trend:**
-- Last 5 plans: 3min, 5min, 9min, 5min
+- Last 5 plans: 5min, 9min, 5min, 9min
 - Trend: Stable with variation based on complexity
 
 ## Accumulated Context
@@ -59,6 +59,9 @@ Recent decisions affecting current work:
 | 03-01 | False positive over false negative | Better to redact too much than leak secrets |
 | 04-01 | Octokit v5 over custom HTTP | Leverages battle-tested rate limiting and retry logic |
 | 04-01 | Secret gists (public: false) | Unlisted but accessible via URL - good privacy/sharing balance |
+| 04-02 | Service layer for uploadSession | Separates orchestration from MCP handler - enables reuse |
+| 04-02 | Auto most recent session selection | Improves UX by defaulting to likely choice |
+| 04-02 | Module-level vi.mock for classes | Cleaner than per-test mocking - handles constructors properly |
 
 ### Deferred Issues
 
@@ -70,6 +73,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-01-12T21:37:00Z
-Stopped at: Completed 04-01-PLAN.md
+Last session: 2026-01-13T02:49:24Z
+Stopped at: Completed 04-02-PLAN.md (Phase 4 complete)
 Resume file: None
