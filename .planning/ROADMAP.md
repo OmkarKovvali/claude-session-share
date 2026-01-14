@@ -8,7 +8,16 @@ Build an MCP server that enables Claude Code session sharing through GitHub Gist
 
 None
 
-## Phases
+## Milestones
+
+- ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-01-13) - [Full details](milestones/v1.0-ROADMAP.md)
+
+## Completed Milestones
+
+<details>
+<summary>✅ v1.0 MVP (Phases 1-7) — SHIPPED 2026-01-13</summary>
+
+### Phases
 
 - [x] **Phase 1: Foundation** - Project setup and MCP server scaffold (Completed: 2026-01-11)
 - [x] **Phase 2: Session Export** - Export Claude Code sessions to sanitized format (Completed: 2026-01-12)
@@ -109,3 +118,5 @@ Add CLI interface that works standalone without MCP, enabling:
 | 7. CLI Interface and Slash Commands | 2/2 | Complete | 2026-01-14 |
 
 **7 of 7 phases complete - All milestone work finished!**
+
+</details>

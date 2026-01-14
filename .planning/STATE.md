@@ -2,19 +2,18 @@
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-01-11)
+See: .planning/PROJECT.md (updated 2026-01-13)
 
 **Core value:** Imported sessions must be indistinguishable from native Claude Code sessions - appearing in `claude --resume`, preserving full conversation context, and working exactly as if they were created locally
-**Current focus:** Phase 7 - CLI Interface and Slash Commands
+**Current focus:** v1.0 shipped! Planning next milestone or real-world validation
 
 ## Current Position
 
-Phase: 7 of 7 (CLI Interface and Slash Commands)
-Plan: 2 of 2 in current phase
-Status: Phase complete
-Last activity: 2026-01-14 — Completed 07-02-PLAN.md
+Milestone: v1.0 MVP complete
+Status: ✅ Shipped
+Last activity: 2026-01-13 — v1.0 milestone archived
 
-Progress: ██████████████████████ 100% (7 of 7 phases complete)
+Progress: ██████████████████████ 100% (v1.0: 7 phases, 11 plans complete)
 
 ## Performance Metrics
 
@@ -43,58 +42,28 @@ Progress: ██████████████████████ 100
 
 ### Decisions
 
-Decisions are logged in PROJECT.md Key Decisions table.
-Recent decisions affecting current work:
+All decisions logged in PROJECT.md Key Decisions table with outcomes.
 
-| Phase | Decision | Rationale |
-|-------|----------|-----------|
-| 01 | Vitest over Jest | Better ESM and TypeScript support out of box |
-| 01 | Strict TypeScript from start | Catch errors early vs adding strictness later |
-| 01 | ES2022 with Node16 modules | Modern features with proper ESM resolution |
-| 02-01 | Node.js built-ins only for streaming | Readline sufficient for JSONL - no external deps needed |
-| 02-01 | Async generator pattern | Memory-efficient streaming without loading entire file |
-| 02-01 | Per-line error recovery | Try-catch per line allows partial file reads on errors |
-| 02-02 | Graceful ENOENT handling | Missing directories return empty array, not error - better UX |
-| 02-02 | Minimal test fixtures | 3-4 line JSONL snippets vs large sessions - faster tests |
-| 02-02 | fs/promises for file ops | Built-in fs module sufficient, no external libs needed |
-| 03-01 | Pattern-based secret detection | Covers common formats without external dependencies |
-| 03-01 | Immutable transformations | Preserves originals for debugging, functional best practices |
-| 03-01 | False positive over false negative | Better to redact too much than leak secrets |
-| 04-01 | Octokit v5 over custom HTTP | Leverages battle-tested rate limiting and retry logic |
-| 04-01 | Secret gists (public: false) | Unlisted but accessible via URL - good privacy/sharing balance |
-| 04-02 | Service layer for uploadSession | Separates orchestration from MCP handler - enables reuse |
-| 04-02 | Auto most recent session selection | Improves UX by defaulting to likely choice |
-| 04-02 | Module-level vi.mock for classes | Cleaner than per-test mocking - handles constructors properly |
-| 05-01 | String splitting for gist ID extraction | Simpler than regex, handles trailing slashes and edge cases more reliably |
-| 05-01 | Separate session filename UUID | New UUID for each import filename, independent of remapped message sessionIds |
-| 05-01 | Type assertions for union narrowing | Explicit type narrowing with `as UserMessage` for testing specific message types |
-| 05-02 | Per-line error recovery for JSONL | Don't fail entire import on individual parse errors - maximize data recovery |
-| 05-02 | Input validation before service call | Validate parameters explicitly for better error messages vs generic exceptions |
-| 05-02 | Success message with resume instructions | Include "Use 'claude --resume'" to guide users to next step |
-| 06-01 | Test with real GitHub API | Validate Gist integration works end-to-end, not just mocked |
-| 06-01 | Complete GistResponse typing | All required fields for TypeScript compliance in test mocks |
-| 06-01 | Tool results in assistant snapshots | Embed in snapshot.messages, not separate ToolResultMessage type |
-| 06-01 | Document known redactor limitations | Connection string passwords not detected - acceptable tradeoff |
-| 07-01 | Node.js built-ins for CLI parsing | Two simple commands don't justify commander/yargs - lighter package |
-| 07-01 | Stdin TTY detection for mode switch | Single entry simplifies packaging, false = MCP mode |
-| 07-01 | Importable MCP server from index.ts | Avoid duplicating logic, keep single source of truth |
-| 07-02 | Prompts as natural language generators | Generate natural language that triggers existing tools - avoids code duplication |
-| 07-02 | Direct handler testing | Test handler logic directly vs server.request() - avoids connection issues |
+v1.0 decisions summary: Service layer pattern, Node.js built-ins only, pattern-based secret detection, three usage modes (tools/prompts/CLI).
 
 ### Deferred Issues
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-None yet.
-
-### Roadmap Evolution
-
-- Phase 7 added (2026-01-13): CLI Interface and Slash Commands - Add standalone CLI commands and slash command integration for easier usage
+None.
 
 ## Session Continuity
 
-Last session: 2026-01-14T00:16:19Z
-Stopped at: Completed 07-02-PLAN.md
+Last session: 2026-01-13
+Stopped at: v1.0 milestone completion
 Resume file: None
+
+## Next Steps
+
+Options:
+1. **Real-world validation** - Test with actual usage, gather feedback
+2. **npm publishing** - Publish package for easier distribution
+3. **Plan v1.1** - Feature expansion (web viewer, expiring links, etc.)
+4. **Documentation** - Video demo, troubleshooting guide
