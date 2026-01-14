@@ -117,9 +117,9 @@ Add CLI interface that works standalone without MCP, enabling:
 | 5. Session Import | v1.0 | 2/2 | Complete | 2026-01-12 |
 | 6. End-to-End Verification | v1.0 | 1/1 | Complete | 2026-01-13 |
 | 7. CLI Interface and Slash Commands | v1.0 | 2/2 | Complete | 2026-01-14 |
-| 8. Session Format Compatibility | v1.1 | 0/? | Not started | - |
+| 8. Session Format Compatibility | v1.1 | 1/1 | Complete | 2026-01-14 |
 
-**7 of 7 phases complete - All milestone work finished!**
+**7 of 7 phases complete - v1.0 milestone work finished!**
 
 </details>
 
@@ -134,7 +134,7 @@ Add CLI interface that works standalone without MCP, enabling:
 **Goal:** Detect and handle both old and new Claude Code session formats seamlessly
 **Depends on:** v1.0 complete
 **Research:** Unlikely (format differences already identified through debugging, internal refactoring)
-**Plans:** TBD
+**Status:** ✅ Complete (2026-01-14)
 
 **What this phase delivers:**
 - Session format version detection (old `snapshot.messages` vs new `message.content`)
@@ -144,4 +144,4 @@ Add CLI interface that works standalone without MCP, enabling:
 - All 388 existing tests continue passing (backward compatibility verified)
 
 Plans:
-- [ ] 08-01: TBD (run /gsd:plan-phase 8 to break down)
+- [x] 08-01: Session format compatibility implementation (1/1 complete - 7min)
