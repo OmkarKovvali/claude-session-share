@@ -4,6 +4,8 @@ import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { uploadSession } from "./services/session-uploader.js";
 import { importSession } from "./services/session-importer.js";
@@ -29,6 +31,7 @@ const server = new Server(
   {
     capabilities: {
       tools: {},
+      prompts: {},
     },
   }
 );
@@ -116,6 +119,94 @@ server.setRequestHandler(ListToolsRequestSchema, async () => {
       },
     ],
   };
+});
+
+/**
+ * List available prompts (slash commands)
+ */
+server.setRequestHandler(ListPromptsRequestSchema, async () => {
+  return {
+    prompts: [
+      {
+        name: "share",
+        description: "Share current Claude Code session to GitHub Gist",
+        arguments: [
+          {
+            name: "session_path",
+            description: "Optional: Path to session file (defaults to most recent)",
+            required: false,
+          },
+        ],
+      },
+      {
+        name: "import",
+        description: "Import shared session from GitHub Gist URL",
+        arguments: [
+          {
+            name: "gist_url",
+            description: "GitHub Gist URL (e.g., https://gist.github.com/user/abc123)",
+            required: true,
+          },
+          {
+            name: "project_path",
+            description: "Optional: Local project directory (defaults to current directory)",
+            required: false,
+          },
+        ],
+      },
+    ],
+  };
+});
+
+/**
+ * Handle prompt requests (slash commands)
+ */
+server.setRequestHandler(GetPromptRequestSchema, async (request) => {
+  const { name, arguments: args } = request.params;
+
+  if (name === "share") {
+    const sessionPath = args?.session_path;
+    return {
+      description: "Share session to GitHub Gist",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: sessionPath
+              ? `Share my session from ${sessionPath} to GitHub Gist`
+              : "Share my current session to GitHub Gist",
+          },
+        },
+      ],
+    };
+  }
+
+  if (name === "import") {
+    const gistUrl = args?.gist_url;
+    const projectPath = args?.project_path;
+
+    if (!gistUrl) {
+      throw new Error("gist_url argument is required");
+    }
+
+    return {
+      description: "Import session from Gist",
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: projectPath
+              ? `Import session from ${gistUrl} to ${projectPath}`
+              : `Import session from ${gistUrl}`,
+          },
+        },
+      ],
+    };
+  }
+
+  throw new Error(`Unknown prompt: ${name}`);
 });
 
 /**
