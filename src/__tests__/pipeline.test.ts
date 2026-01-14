@@ -55,7 +55,7 @@ describe('sanitizeSession', () => {
     const sanitized = sanitizeSession(messages, basePath);
 
     // Verify thinking stripped
-    expect((sanitized[1] as AssistantMessage).snapshot.thinking).toBeNull();
+    expect((sanitized[1] as AssistantMessage).snapshot!.thinking).toBeNull();
 
     // Verify cwd sanitized
     expect((sanitized[0] as UserMessage).cwd).toBe('src');
@@ -64,18 +64,18 @@ describe('sanitizeSession', () => {
     expect((sanitized[2] as FileHistorySnapshot).snapshot.files[0].path).toBe('src/utils.ts');
 
     // Verify secret redacted
-    expect((sanitized[1] as AssistantMessage).snapshot.messages[0].content).toContain(
+    expect((sanitized[1] as AssistantMessage).snapshot!.messages[0].content).toContain(
       '[REDACTED]'
     );
-    expect((sanitized[1] as AssistantMessage).snapshot.messages[0].content).not.toContain(
+    expect((sanitized[1] as AssistantMessage).snapshot!.messages[0].content).not.toContain(
       'secret123456'
     );
 
     // Verify path in content sanitized
-    expect((sanitized[1] as AssistantMessage).snapshot.messages[0].content).toContain(
+    expect((sanitized[1] as AssistantMessage).snapshot!.messages[0].content).toContain(
       'src/index.ts'
     );
-    expect((sanitized[1] as AssistantMessage).snapshot.messages[0].content).not.toContain(
+    expect((sanitized[1] as AssistantMessage).snapshot!.messages[0].content).not.toContain(
       '/Users/testuser/project/src/index.ts'
     );
   });
@@ -146,8 +146,8 @@ describe('sanitizeSession', () => {
 
     const sanitized = sanitizeSession(messages, basePath);
 
-    expect((sanitized[0] as AssistantMessage).snapshot.thinking).toBeNull();
-    expect((sanitized[1] as AssistantMessage).snapshot.thinking).toBeNull();
+    expect((sanitized[0] as AssistantMessage).snapshot!.thinking).toBeNull();
+    expect((sanitized[1] as AssistantMessage).snapshot!.thinking).toBeNull();
   });
 
   it('should preserve message order', () => {
@@ -189,7 +189,7 @@ describe('sanitizeSession', () => {
     expect(sanitized[1].type).toBe('assistant');
     expect(sanitized[2].type).toBe('user');
     expect((sanitized[0] as UserMessage).message.content).toBe('First');
-    expect((sanitized[1] as AssistantMessage).snapshot.messages[0].content).toBe('Second');
+    expect((sanitized[1] as AssistantMessage).snapshot!.messages[0].content).toBe('Second');
     expect((sanitized[2] as UserMessage).message.content).toBe('Third');
   });
 
@@ -212,11 +212,11 @@ describe('sanitizeSession', () => {
     const sanitized = sanitizeSession(messages, basePath);
 
     // Original unchanged
-    expect((messages[0] as AssistantMessage).snapshot.thinking).toBe('Original thinking');
-    expect((messages[0] as AssistantMessage).snapshot.messages[0].content).toBe('Original content');
+    expect((messages[0] as AssistantMessage).snapshot!.thinking).toBe('Original thinking');
+    expect((messages[0] as AssistantMessage).snapshot!.messages[0].content).toBe('Original content');
 
     // Sanitized changed
-    expect((sanitized[0] as AssistantMessage).snapshot.thinking).toBeNull();
+    expect((sanitized[0] as AssistantMessage).snapshot!.thinking).toBeNull();
   });
 
   it('should handle realistic session snippet', () => {
@@ -281,13 +281,13 @@ describe('sanitizeSession', () => {
 
     // Assistant message: thinking stripped, paths sanitized, secrets redacted
     const assistantMsg = sanitized[1] as AssistantMessage;
-    expect(assistantMsg.snapshot.thinking).toBeNull();
-    expect(assistantMsg.snapshot.messages[0].content).toContain('src/api/users.ts');
-    expect(assistantMsg.snapshot.messages[0].content).not.toContain(
+    expect(assistantMsg.snapshot!.thinking).toBeNull();
+    expect(assistantMsg.snapshot!.messages[0].content).toContain('src/api/users.ts');
+    expect(assistantMsg.snapshot!.messages[0].content).not.toContain(
       '/Users/testuser/project/src'
     );
-    expect(assistantMsg.snapshot.messages[1].content).toContain('[REDACTED]');
-    expect(assistantMsg.snapshot.messages[1].content).not.toContain('sk-1234567890abcdef');
+    expect(assistantMsg.snapshot!.messages[1].content).toContain('[REDACTED]');
+    expect(assistantMsg.snapshot!.messages[1].content).not.toContain('sk-1234567890abcdef');
 
     // File snapshot: paths sanitized
     const snapshotMsg = sanitized[2] as FileHistorySnapshot;

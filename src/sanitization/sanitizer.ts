@@ -13,21 +13,52 @@ import { redactSecrets } from './redactor.js';
 
 /**
  * Sanitize assistant message by stripping thinking and sanitizing paths in tool results
+ * Supports both old format (snapshot.messages) and new format (message.content)
  */
 export function sanitizeAssistantMessage(
   msg: AssistantMessage,
   basePath: string
 ): AssistantMessage {
-  return {
-    ...msg,
-    snapshot: {
-      thinking: null, // Strip thinking block
-      messages: msg.snapshot.messages.map((m) => ({
-        ...m,
-        content: redactSecrets(sanitizePathsInContent(m.content, basePath)),
-      })),
-    },
-  };
+  // Old format (v1.x): snapshot.messages
+  if (msg.snapshot) {
+    return {
+      ...msg,
+      snapshot: {
+        thinking: null, // Strip thinking block
+        messages: msg.snapshot.messages.map((m) => ({
+          ...m,
+          content: redactSecrets(sanitizePathsInContent(m.content, basePath)),
+        })),
+      },
+    };
+  }
+
+  // New format (v2.0.76+): message.content
+  if (msg.message) {
+    return {
+      ...msg,
+      message: {
+        ...msg.message,
+        content: msg.message.content
+          // Filter out thinking blocks entirely
+          .filter((block) => block.type !== 'thinking')
+          // Sanitize text in remaining blocks
+          .map((block) => {
+            if (block.type === 'text' && block.text) {
+              return {
+                ...block,
+                text: redactSecrets(sanitizePathsInContent(block.text, basePath)),
+              };
+            }
+            // Preserve tool_use, tool_result, and other block types as-is
+            return block;
+          }),
+      },
+    };
+  }
+
+  // Neither format present - error
+  throw new Error('AssistantMessage must have either snapshot or message field');
 }
 
 /**

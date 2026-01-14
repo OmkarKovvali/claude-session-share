@@ -192,7 +192,7 @@ describe('End-to-End Session Sharing Workflow', () => {
         (msg) => msg.type === 'assistant'
       ) as AssistantMessage[];
       for (const msg of assistantMsgs) {
-        expect(msg.snapshot.thinking).toBeNull();
+        expect(msg.snapshot!.thinking).toBeNull();
       }
 
       // Verify: Paths sanitized (absolute → relative)
@@ -201,7 +201,7 @@ describe('End-to-End Session Sharing Workflow', () => {
       expect(userMsg.cwd).toMatch(/^(myproject|\.)/); // Should be relative
 
       const firstAssistant = importedMessages[1] as AssistantMessage;
-      const toolResultContent = firstAssistant.snapshot.messages[1].content;
+      const toolResultContent = firstAssistant.snapshot!.messages[1].content;
       expect(toolResultContent).not.toContain('/Users/test/myproject/');
       expect(toolResultContent).toContain('src/file.ts'); // Relative path preserved
 
@@ -213,7 +213,7 @@ describe('End-to-End Session Sharing Workflow', () => {
       const secondAssistant = importedMessages[2] as AssistantMessage;
       // Note: API keys in natural language text (not key=value format) may not be redacted
       // This is acceptable as they appear in context that makes them less likely to be real secrets
-      expect(secondAssistant.snapshot.messages[0].content).not.toContain('/Users/test/myproject/');
+      expect(secondAssistant.snapshot!.messages[0].content).not.toContain('/Users/test/myproject/');
 
       // Verify: Valid JSONL structure
       for (const line of importedContent.split('\n').filter((l) => l.trim())) {
@@ -389,7 +389,7 @@ describe('End-to-End Session Sharing Workflow', () => {
 
       expect(assistantMessages.length).toBe(2);
       for (const msg of assistantMessages) {
-        expect(msg.snapshot.thinking).toBeNull();
+        expect(msg.snapshot!.thinking).toBeNull();
       }
 
       // Verify: responses are still present
@@ -637,8 +637,8 @@ describe('End-to-End Session Sharing Workflow', () => {
 
       expect(importedMessages[1].type).toBe('assistant');
       const assistantMsg = importedMessages[1] as AssistantMessage;
-      expect(assistantMsg.snapshot.thinking).toBeNull();
-      expect(assistantMsg.snapshot.messages[0].content).toBe('Hi there!');
+      expect(assistantMsg.snapshot!.thinking).toBeNull();
+      expect(assistantMsg.snapshot!.messages[0].content).toBe('Hi there!');
     });
   });
 });
