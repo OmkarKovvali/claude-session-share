@@ -18,6 +18,7 @@ Imported sessions must be indistinguishable from native Claude Code sessions - a
 - ✓ GitHub Gist storage backend (secret gists for privacy) — v1.0
 - ✓ Tool results are sanitized, not stripped (preserve utility while removing secrets) — v1.0
 - ✓ Minimal MCP context footprint (tool definitions under 200 tokens) — v1.0
+- ✓ Support both old (v1.x) and new (v2.0.76+) Claude Code session formats — v1.1
 
 ### Active
 
@@ -36,9 +37,9 @@ Imported sessions must be indistinguishable from native Claude Code sessions - a
 
 ## Context
 
-**Current State (v1.0 shipped 2026-01-13):**
+**Current State (v1.1 shipped 2026-01-14):**
 
-Shipped fully functional MCP server with 6,475 lines of TypeScript across 66 files. Tech stack: TypeScript, MCP SDK (stdio transport), Octokit v5, Vitest. All 388 tests passing including end-to-end validation with real GitHub API.
+Shipped fully functional MCP server with 6,913 lines of TypeScript across 66 files. Tech stack: TypeScript, MCP SDK (stdio transport), Octokit v5, Vitest. All 412 tests passing (388 from v1.0 + 24 new for format compatibility).
 
 **What works:**
 - Session export/import with GitHub Gist integration
@@ -46,6 +47,7 @@ Shipped fully functional MCP server with 6,475 lines of TypeScript across 66 fil
 - Three usage modes: MCP tools, slash commands (`/share`, `/import`), standalone CLI
 - UUID remapping ensures imported sessions don't conflict with existing ones
 - Imported sessions fully resumable via `claude --resume`
+- Dual-format support for both v1.x and v2.0.76+ Claude Code sessions with automatic detection
 
 **Known limitations:**
 - Connection string passwords (e.g., `postgresql://user:pass@host/db`) not detected by pattern-based redactor
@@ -75,6 +77,8 @@ This project emerged from wanting to share Claude Code sessions with others. Cla
 | Node.js built-ins only | Avoid external deps for core functionality | ✓ Good - Lightweight package, only 3 runtime deps (MCP SDK, Octokit, uuid) |
 | Pattern-based secret detection | Covers common formats without external libs | ⚠️ Revisit - Misses connection string passwords, may need enhancement |
 | Three usage modes | MCP tools + slash commands + CLI for flexibility | ✓ Good - Users can choose their preferred interface |
+| Format detection via presence check | Detect old vs new format by checking field existence | ✓ Good - Simple, self-identifying, no version maintenance needed |
+| Optional fields for format variants | snapshot? and message? instead of discriminated union | ✓ Good - Cleaner types, avoids version number management |
 
 ---
-*Last updated: 2026-01-13 after v1.0 milestone*
+*Last updated: 2026-01-14 after v1.1 milestone*

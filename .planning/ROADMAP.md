@@ -11,7 +11,7 @@ None
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-01-13) - [Full details](milestones/v1.0-ROADMAP.md)
-- 🚧 **v1.1 Session Format Compatibility** — Phase 8 (in progress)
+- ✅ **v1.1 Session Format Compatibility** — Phase 8 (shipped 2026-01-14) - [Full details](milestones/v1.1-ROADMAP.md)
 
 ## Completed Milestones
 
@@ -119,29 +119,19 @@ Add CLI interface that works standalone without MCP, enabling:
 | 7. CLI Interface and Slash Commands | v1.0 | 2/2 | Complete | 2026-01-14 |
 | 8. Session Format Compatibility | v1.1 | 1/1 | Complete | 2026-01-14 |
 
-**7 of 7 phases complete - v1.0 milestone work finished!**
+**All phases complete - v1.1 milestone shipped!**
 
 </details>
 
-## 🚧 v1.1 Session Format Compatibility (In Progress)
+<details>
+<summary>✅ v1.1 Session Format Compatibility (Phase 8) — SHIPPED 2026-01-14</summary>
 
-**Milestone Goal:** Support both old (v1.x) and new (v2.0.76+) Claude Code session formats with backward compatibility
+### Phase
 
-**Context:** Claude Code v2.0.76 changed session format from `snapshot.messages` array to `message.content` API response object, breaking the current tool. This milestone adds format detection and dual-format support.
+- [x] **Phase 8: Session Format Compatibility** - Support both old and new Claude Code session formats (Completed: 2026-01-14)
 
-### Phase 8: Session Format Compatibility
+**Milestone Summary:** Added dual-format support for v1.x and v2.0.76+ Claude Code sessions with automatic detection, zero breaking changes, full backward compatibility (all 388 existing tests pass + 24 new tests).
 
-**Goal:** Detect and handle both old and new Claude Code session formats seamlessly
-**Depends on:** v1.0 complete
-**Research:** Unlikely (format differences already identified through debugging, internal refactoring)
-**Status:** ✅ Complete (2026-01-14)
+[Full details](milestones/v1.1-ROADMAP.md)
 
-**What this phase delivers:**
-- Session format version detection (old `snapshot.messages` vs new `message.content`)
-- Updated TypeScript types supporting both formats
-- Modified sanitization logic handling both formats
-- Comprehensive tests for format detection and conversion
-- All 388 existing tests continue passing (backward compatibility verified)
-
-Plans:
-- [x] 08-01: Session format compatibility implementation (1/1 complete - 7min)
+</details>
