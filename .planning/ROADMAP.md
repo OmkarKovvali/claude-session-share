@@ -16,6 +16,7 @@ None
 - [x] **Phase 4: Gist Storage** - GitHub Gist integration for sharing (Completed: 2026-01-13)
 - [x] **Phase 5: Session Import** - Import sessions with UUID remapping and local storage (Completed: 2026-01-12)
 - [x] **Phase 6: End-to-End Verification** - Round-trip testing and `claude --resume` integration (Completed: 2026-01-13)
+- [ ] **Phase 7: CLI Interface and Slash Commands** - Add CLI interface for direct usage and slash command integration
 
 ## Phase Details
 
@@ -78,6 +79,23 @@ Plans:
 Plans:
 - [x] 06-01: End-to-end integration tests and manual verification (1/1 complete - 41min)
 
+### Phase 7: CLI Interface and Slash Commands
+**Goal**: Add standalone CLI commands and slash command integration for easier usage
+**Depends on**: Phase 6
+**Research**: Unlikely (CLI argument parsing and command routing)
+**Status**: In progress
+
+Plans:
+- [x] 07-01: CLI entry point with dual-mode detection (1/2 complete - 52min)
+- [ ] 07-02: MCP prompts for slash commands (0/2 complete)
+
+**Details:**
+Add CLI interface that works standalone without MCP, enabling:
+- `npx claude-session-share share` - Upload to Gist, return URL
+- `npx claude-session-share import <url>` - Download from Gist URL
+- Slash command integration (`/share`, `/import`) for natural usage within Claude Code
+- Command-line argument parsing and routing to existing services
+
 ## Progress
 
 | Phase | Plans Complete | Status | Completed |
@@ -88,5 +106,6 @@ Plans:
 | 4. Gist Storage | 2/2 | Complete | 2026-01-13 |
 | 5. Session Import | 2/2 | Complete | 2026-01-12 |
 | 6. End-to-End Verification | 1/1 | Complete | 2026-01-13 |
+| 7. CLI Interface and Slash Commands | 1/2 | In progress | - |
 
-**All 6 phases complete! 🎉**
+**6 of 7 phases complete (1 plan in progress)**
