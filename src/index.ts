@@ -14,6 +14,8 @@ import { parseSessionFile } from "./session/reader.js";
 import { homedir } from 'os';
 import { join } from 'path';
 import { readdir, stat } from 'fs/promises';
+import { realpathSync } from 'fs';
+import { fileURLToPath } from 'url';
 
 /**
  * MCP Server for Claude Code session sharing
@@ -331,7 +333,11 @@ async function main() {
 export default main;
 
 // Run main if this file is executed directly (not imported)
-if (import.meta.url === `file://${process.argv[1]}`) {
+// Need to resolve symlinks because process.argv[1] might be a symlink
+const currentFile = fileURLToPath(import.meta.url);
+const scriptFile = realpathSync(process.argv[1]);
+
+if (currentFile === scriptFile) {
   main().catch((error) => {
     console.error("Fatal error in main():", error);
     process.exit(1);
