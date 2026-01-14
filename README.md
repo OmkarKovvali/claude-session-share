@@ -13,6 +13,7 @@ Share your Claude Code conversations effortlessly while keeping your private dat
 - **🔒 Privacy First** - Automatically strips thinking blocks, sanitizes paths, and redacts secrets
 - **📥 Seamless Import** - Import shared sessions that work exactly like native Claude Code sessions
 - **💬 Natural Language** - Just ask Claude to "share my session" or "import from [link]"
+- **⚡ Slash Commands** - Direct invocation via `/share` and `/import` commands
 - **🔄 Full Compatibility** - Imported sessions appear in `claude --resume` and preserve conversation context
 
 ## 📦 Installation
@@ -111,7 +112,36 @@ Claude will:
 3. Write to your local `.claude/projects/` directory
 4. Make it available for resuming
 
-### Option B: Command Line (Standalone CLI)
+### Option B: Slash Commands (via MCP Prompts)
+
+Claude Code users can invoke commands directly via slash commands:
+
+#### Share Command
+
+Type in any Claude Code conversation:
+```
+/mcp__claude-session-share__share
+```
+
+With specific session:
+```
+/mcp__claude-session-share__share session_path=/path/to/session.jsonl
+```
+
+#### Import Command
+
+```
+/mcp__claude-session-share__import gist_url=https://gist.github.com/user/abc123
+```
+
+With custom project path:
+```
+/mcp__claude-session-share__import gist_url=https://gist.github.com/user/abc123 project_path=/my/project
+```
+
+**Note:** Slash commands are available in Claude Code 0.9.0+. They appear in autocomplete when you type `/mcp`.
+
+### Option C: Command Line (Standalone CLI)
 
 You can also use the CLI directly without Claude Code:
 
@@ -148,6 +178,14 @@ claude --resume
 ```
 
 The imported session works exactly like a native Claude Code session—full conversation history, no thinking blocks, perfect privacy.
+
+### Three Ways to Use
+
+1. **Natural Language** (via MCP tools) - "Share my session"
+2. **Slash Commands** (via MCP prompts) - `/mcp__claude-session-share__share`
+3. **CLI** (standalone) - `npx claude-session-share share`
+
+All three methods use the same underlying implementation and provide identical functionality.
 
 ## 🔐 Privacy Protection
 
