@@ -5,15 +5,17 @@
 See: .planning/PROJECT.md (updated 2026-01-13)
 
 **Core value:** Imported sessions must be indistinguishable from native Claude Code sessions - appearing in `claude --resume`, preserving full conversation context, and working exactly as if they were created locally
-**Current focus:** v1.0 shipped! Planning next milestone or real-world validation
+**Current focus:** v1.1 Session Format Compatibility - support both old and new Claude Code session formats
 
 ## Current Position
 
-Milestone: v1.0 MVP complete
-Status: ✅ Shipped
-Last activity: 2026-01-13 — v1.0 milestone archived
+Milestone: v1.1 Session Format Compatibility
+Phase: 8 of 8 (Session Format Compatibility)
+Plan: Not started
+Status: Ready to plan
+Last activity: 2026-01-14 — Milestone v1.1 created
 
-Progress: ██████████████████████ 100% (v1.0: 7 phases, 11 plans complete)
+Progress: ░░░░░░░░░░░░░░░░░░░░░░ 0% (v1.1: 1 phase, 0 plans complete)
 
 ## Performance Metrics
 
@@ -56,14 +58,17 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-01-13
-Stopped at: v1.0 milestone completion
+Last session: 2026-01-14
+Stopped at: Milestone v1.1 initialization
 Resume file: None
+
+## Roadmap Evolution
+
+- Milestone v1.1 created: Session format compatibility, 1 phase (Phase 8)
 
 ## Next Steps
 
-Options:
-1. **Real-world validation** - Test with actual usage, gather feedback
-2. **npm publishing** - Publish package for easier distribution
-3. **Plan v1.1** - Feature expansion (web viewer, expiring links, etc.)
-4. **Documentation** - Video demo, troubleshooting guide
+Phase 8: Session Format Compatibility
+- Plan the phase breakdown
+- Implement format detection and dual-format support
+- Ensure backward compatibility with all existing tests

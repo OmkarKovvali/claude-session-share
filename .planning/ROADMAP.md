@@ -11,6 +11,7 @@ None
 ## Milestones
 
 - ✅ **v1.0 MVP** — Phases 1-7 (shipped 2026-01-13) - [Full details](milestones/v1.0-ROADMAP.md)
+- 🚧 **v1.1 Session Format Compatibility** — Phase 8 (in progress)
 
 ## Completed Milestones
 
@@ -107,16 +108,40 @@ Add CLI interface that works standalone without MCP, enabling:
 
 ## Progress
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation | 1/1 | Complete | 2026-01-11 |
-| 2. Session Export | 2/2 | Complete | 2026-01-12 |
-| 3. Privacy Sanitization | 1/1 | Complete | 2026-01-12 |
-| 4. Gist Storage | 2/2 | Complete | 2026-01-13 |
-| 5. Session Import | 2/2 | Complete | 2026-01-12 |
-| 6. End-to-End Verification | 1/1 | Complete | 2026-01-13 |
-| 7. CLI Interface and Slash Commands | 2/2 | Complete | 2026-01-14 |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation | v1.0 | 1/1 | Complete | 2026-01-11 |
+| 2. Session Export | v1.0 | 2/2 | Complete | 2026-01-12 |
+| 3. Privacy Sanitization | v1.0 | 1/1 | Complete | 2026-01-12 |
+| 4. Gist Storage | v1.0 | 2/2 | Complete | 2026-01-13 |
+| 5. Session Import | v1.0 | 2/2 | Complete | 2026-01-12 |
+| 6. End-to-End Verification | v1.0 | 1/1 | Complete | 2026-01-13 |
+| 7. CLI Interface and Slash Commands | v1.0 | 2/2 | Complete | 2026-01-14 |
+| 8. Session Format Compatibility | v1.1 | 0/? | Not started | - |
 
 **7 of 7 phases complete - All milestone work finished!**
 
 </details>
+
+## 🚧 v1.1 Session Format Compatibility (In Progress)
+
+**Milestone Goal:** Support both old (v1.x) and new (v2.0.76+) Claude Code session formats with backward compatibility
+
+**Context:** Claude Code v2.0.76 changed session format from `snapshot.messages` array to `message.content` API response object, breaking the current tool. This milestone adds format detection and dual-format support.
+
+### Phase 8: Session Format Compatibility
+
+**Goal:** Detect and handle both old and new Claude Code session formats seamlessly
+**Depends on:** v1.0 complete
+**Research:** Unlikely (format differences already identified through debugging, internal refactoring)
+**Plans:** TBD
+
+**What this phase delivers:**
+- Session format version detection (old `snapshot.messages` vs new `message.content`)
+- Updated TypeScript types supporting both formats
+- Modified sanitization logic handling both formats
+- Comprehensive tests for format detection and conversion
+- All 388 existing tests continue passing (backward compatibility verified)
+
+Plans:
+- [ ] 08-01: TBD (run /gsd:plan-phase 8 to break down)
