@@ -41,7 +41,7 @@ export interface UserMessage extends BaseMessage {
 }
 
 /**
- * Assistant thinking and response snapshot
+ * Assistant thinking and response snapshot (v1.x format)
  */
 export interface AssistantSnapshot {
   thinking: string | null;
@@ -52,12 +52,45 @@ export interface AssistantSnapshot {
 }
 
 /**
+ * Content block in new format (v2.0.76+)
+ */
+export interface ContentBlock {
+  type: string; // 'text', 'thinking', 'tool_use', 'tool_result', etc.
+  text?: string; // Present for text and thinking blocks
+  // Additional fields for tool blocks preserved as-is
+  [key: string]: unknown;
+}
+
+/**
+ * API response message structure (v2.0.76+ format)
+ */
+export interface ApiResponseMessage {
+  model: string;
+  id: string;
+  type: string;
+  role: string;
+  content: ContentBlock[];
+  stop_reason: string | null;
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+  };
+}
+
+/**
  * Assistant response message
+ *
+ * Supports two formats:
+ * - Old format (v1.x): Uses `snapshot` field with thinking string and messages array
+ * - New format (v2.0.76+): Uses `message` field with API response structure
+ *
+ * At least one of `snapshot` or `message` must be present.
  */
 export interface AssistantMessage extends BaseMessage {
   type: 'assistant';
   messageId: string;
-  snapshot: AssistantSnapshot;
+  snapshot?: AssistantSnapshot; // Old format (v1.x)
+  message?: ApiResponseMessage; // New format (v2.0.76+)
 }
 
 /**
