@@ -29,7 +29,29 @@ MCP server for sharing Claude Code sessions via GitHub Gist with automatic priva
 
 ### Configure MCP Server
 
-Add to `~/.claude/mcp.json`:
+**Option 1: One-liner (recommended)**
+
+Run this in terminal, replacing `YOUR_TOKEN` with your GitHub token:
+
+```bash
+mkdir -p ~/.claude && cat > ~/.claude/mcp.json << 'EOF'
+{
+  "mcpServers": {
+    "claude-session-share": {
+      "command": "npx",
+      "args": ["-y", "claude-session-share"],
+      "env": {
+        "GITHUB_TOKEN": "YOUR_TOKEN"
+      }
+    }
+  }
+}
+EOF
+```
+
+**Option 2: Manual edit**
+
+Create or edit `~/.claude/mcp.json`:
 
 ```json
 {
@@ -45,13 +67,17 @@ Add to `~/.claude/mcp.json`:
 }
 ```
 
+> **Note:** If the file already exists with other MCP servers, add the `"claude-session-share": {...}` block inside the existing `"mcpServers"` object.
+
 ### Verify Installation
 
 ```bash
-claude  # Start Claude Code
+claude  # Start (or restart) Claude Code
 # Type: /mcp
 # You should see "claude-session-share" in the list
 ```
+
+> **Important:** If Claude Code was already running, restart it for the new MCP server to load.
 
 ## Usage
 
