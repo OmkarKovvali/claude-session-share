@@ -28,7 +28,7 @@ import { fileURLToPath } from 'url';
 const server = new Server(
   {
     name: "claude-session-share",
-    version: "1.1.0",
+    version: "1.2.0",
   },
   {
     capabilities: {
