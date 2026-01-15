@@ -1,9 +1,12 @@
 {
   "name": "claude-session-share",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "MCP server for sharing Claude Code sessions via GitHub Gist with privacy protection",
   "type": "module",
   "main": "dist/index.js",
+  "bin": {
+    "claude-session-share": "dist/index.js"
+  },
   "files": [
     "dist/**/*",
     "README.md",
