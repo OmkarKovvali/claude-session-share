@@ -2,9 +2,11 @@
  * Path encoding utilities for Claude Code session directories
  *
  * Claude Code stores sessions in ~/.claude/projects/{encodedPath}/
- * where paths are encoded by replacing `/` with `-` and removing leading `-`
+ * where paths are encoded by:
+ * 1. Replacing `/` with `-` (keeps leading dash from root /)
+ * 2. Replacing `_` with `-` (underscores become hyphens)
  *
- * Example: /Users/name/project -> Users-name-project
+ * Example: /Users/name/my_project -> -Users-name-my-project
  */
 
 import { homedir } from 'os';
@@ -13,34 +15,37 @@ import { join } from 'path';
 /**
  * Encodes an absolute project path into Claude Code's directory naming format
  *
- * @param absolutePath - Absolute file system path (e.g., "/Users/name/project")
- * @returns Encoded directory name (e.g., "Users-name-project")
+ * @param absolutePath - Absolute file system path (e.g., "/Users/name/my_project")
+ * @returns Encoded directory name (e.g., "-Users-name-my-project")
  *
  * @example
- * encodeProjectPath('/Users/name/my-project')
- * // Returns: 'Users-name-my-project'
+ * encodeProjectPath('/Users/name/my_project')
+ * // Returns: '-Users-name-my-project'
  */
 export function encodeProjectPath(absolutePath: string): string {
-  // Replace all forward slashes with dashes
-  const encoded = absolutePath.replace(/\//g, '-');
-
-  // Remove leading dash (from root /)
-  return encoded.startsWith('-') ? encoded.slice(1) : encoded;
+  // Replace all forward slashes with dashes (keep leading dash)
+  // Replace all underscores with dashes (Claude Code normalizes to hyphens)
+  return absolutePath.replace(/\//g, '-').replace(/_/g, '-');
 }
 
 /**
  * Decodes a Claude Code directory name back to an absolute path
  *
- * @param encodedName - Encoded directory name (e.g., "Users-name-project")
+ * Note: This is a best-effort decode since both `/` and `_` encode to `-`.
+ * The result will have all `-` converted to `/`, which works for path lookup
+ * but may not preserve original underscores in folder names.
+ *
+ * @param encodedName - Encoded directory name (e.g., "-Users-name-project")
  * @returns Decoded absolute path (e.g., "/Users/name/project")
  *
  * @example
- * decodeProjectPath('Users-name-my-project')
- * // Returns: '/Users/name/my-project'
+ * decodeProjectPath('-Users-name-my-project')
+ * // Returns: '/Users/name/my/project'
  */
 export function decodeProjectPath(encodedName: string): string {
-  // Replace all dashes with forward slashes and add leading slash
-  return '/' + encodedName.replace(/-/g, '/');
+  // Replace all dashes with forward slashes
+  // The leading dash becomes the root /
+  return encodedName.replace(/-/g, '/');
 }
 
 /**

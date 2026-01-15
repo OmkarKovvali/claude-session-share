@@ -14,11 +14,6 @@ vi.mock('fs/promises', () => ({
   writeFile: vi.fn(),
 }));
 
-// Mock crypto for predictable UUID generation
-vi.mock('crypto', () => ({
-  randomUUID: vi.fn(() => 'test-session-uuid-123'),
-}));
-
 describe('writeSessionToLocal', () => {
   let mockMkdir: any;
   let mockWriteFile: any;
@@ -58,21 +53,21 @@ describe('writeSessionToLocal', () => {
     const projectPath = '/Users/name/project';
     const result = await writeSessionToLocal(messages, projectPath);
 
-    // Verify directory creation
-    const expectedDir = join(homedir(), '.claude', 'projects', 'Users-name-project');
+    // Verify directory creation (path includes leading dash and underscores become hyphens)
+    const expectedDir = join(homedir(), '.claude', 'projects', '-Users-name-project');
     expect(mockMkdir).toHaveBeenCalledWith(expectedDir, { recursive: true });
 
-    // Verify file writing
-    const expectedPath = join(expectedDir, 'test-session-uuid-123.jsonl');
+    // Verify file writing - filename now uses sessionId from message
+    const expectedPath = join(expectedDir, 'session-123.jsonl');
     expect(mockWriteFile).toHaveBeenCalledWith(
       expectedPath,
       expect.any(String),
       { encoding: 'utf-8' }
     );
 
-    // Verify result
+    // Verify result - sessionId comes from messages, not random UUID
     expect(result.filePath).toBe(expectedPath);
-    expect(result.sessionId).toBe('test-session-uuid-123');
+    expect(result.sessionId).toBe('session-123');
   });
 
   it('should format messages as JSONL with trailing newline', async () => {
@@ -174,7 +169,8 @@ describe('writeSessionToLocal', () => {
 
     await writeSessionToLocal(messages, '/opt/code/my-app');
 
-    const expectedDir = join(homedir(), '.claude', 'projects', 'opt-code-my-app');
+    // Path encoding keeps leading dash from root /
+    const expectedDir = join(homedir(), '.claude', 'projects', '-opt-code-my-app');
     expect(mockMkdir).toHaveBeenCalledWith(expectedDir, { recursive: true });
   });
 
@@ -312,13 +308,16 @@ describe('writeSessionToLocal', () => {
     }
   });
 
-  it('should write empty messages array', async () => {
+  it('should throw error for empty messages array', async () => {
     const messages: UserMessage[] = [];
 
-    await writeSessionToLocal(messages, '/Users/name/project');
+    await expect(
+      writeSessionToLocal(messages, '/Users/name/project')
+    ).rejects.toThrow(SessionWriteError);
 
-    const writtenContent = mockWriteFile.mock.calls[0][1];
-    expect(writtenContent).toBe('\n'); // Just trailing newline
+    await expect(
+      writeSessionToLocal(messages, '/Users/name/project')
+    ).rejects.toThrow(/Cannot write empty session/);
   });
 
   it('should preserve all message fields in written JSON', async () => {

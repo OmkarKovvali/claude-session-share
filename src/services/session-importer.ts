@@ -9,10 +9,59 @@
  * 5. Write to local storage
  */
 
+import { join } from 'path';
 import { GistClient } from '../gist/client.js';
 import { UUIDMapper } from '../utils/uuid-mapper.js';
 import { writeSessionToLocal } from '../session/writer.js';
-import type { SessionMessage } from '../session/types.js';
+import type { SessionMessage, UserMessage } from '../session/types.js';
+
+/**
+ * Restore absolute cwd path for user messages
+ *
+ * During export, cwd paths are sanitized to relative paths for privacy.
+ * During import, we need to restore them to absolute paths so Claude Code
+ * can properly associate the session with the project.
+ *
+ * @param message - Session message to process
+ * @param projectPath - Absolute project path to use as base
+ * @returns Message with restored cwd (if applicable)
+ */
+function restoreAbsoluteCwd<T extends SessionMessage>(
+  message: T,
+  projectPath: string
+): T {
+  if (message.type !== 'user') {
+    return message;
+  }
+
+  const userMsg = message as UserMessage;
+
+  // Handle missing or undefined cwd
+  if (!userMsg.cwd) {
+    return {
+      ...message,
+      cwd: projectPath,
+    } as T;
+  }
+
+  let absoluteCwd: string;
+
+  if (userMsg.cwd === '.') {
+    // Root of project
+    absoluteCwd = projectPath;
+  } else if (userMsg.cwd.startsWith('/')) {
+    // Already absolute (external path), leave unchanged
+    absoluteCwd = userMsg.cwd;
+  } else {
+    // Relative path - combine with project path
+    absoluteCwd = join(projectPath, userMsg.cwd);
+  }
+
+  return {
+    ...message,
+    cwd: absoluteCwd,
+  } as T;
+}
 
 /**
  * Result of importing a session
@@ -112,14 +161,21 @@ export async function importSession(
     const mapper = new UUIDMapper();
     const remappedMessages = messages.map((msg) => mapper.remapMessage(msg));
 
-    // Step 6: Write to local storage
-    const result = await writeSessionToLocal(remappedMessages, projectPath);
+    // Step 6: Restore absolute cwd paths
+    // Sanitization converts absolute paths to relative for privacy.
+    // We need to restore them so Claude Code can find the session.
+    const restoredMessages = remappedMessages.map((msg) =>
+      restoreAbsoluteCwd(msg, projectPath)
+    );
 
-    // Step 7: Return import result
+    // Step 7: Write to local storage
+    const result = await writeSessionToLocal(restoredMessages, projectPath);
+
+    // Step 8: Return import result
     return {
       sessionPath: result.filePath,
       sessionId: result.sessionId,
-      messageCount: remappedMessages.length,
+      messageCount: restoredMessages.length,
       projectPath,
     };
   } catch (error) {

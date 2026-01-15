@@ -8,7 +8,6 @@
  */
 
 import { mkdir, writeFile } from 'fs/promises';
-import { randomUUID } from 'crypto';
 import { join } from 'path';
 import { homedir } from 'os';
 import type { SessionMessage } from './types.js';
@@ -60,10 +59,13 @@ export async function writeSessionToLocal(
     // 1. Encode project path for directory name
     const encodedPath = encodeProjectPath(projectPath);
 
-    // 2. Generate new session ID for filename
-    // Note: Messages already have remapped sessionIds in their fields,
-    // but the filename needs its own unique ID
-    const sessionId = randomUUID();
+    // 2. Extract sessionId from messages for filename
+    // Claude Code's --resume looks up sessions by internal sessionId,
+    // so filename must match the sessionId inside the messages
+    if (messages.length === 0) {
+      throw new SessionWriteError('Cannot write empty session: no messages provided');
+    }
+    const sessionId = messages[0].sessionId;
 
     // 3. Build target directory and file paths
     const sessionDirectory = join(homedir(), '.claude', 'projects', encodedPath);

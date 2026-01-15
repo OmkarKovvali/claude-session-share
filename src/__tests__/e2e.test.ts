@@ -195,10 +195,12 @@ describe('End-to-End Session Sharing Workflow', () => {
         expect(msg.snapshot!.thinking).toBeNull();
       }
 
-      // Verify: Paths sanitized (absolute → relative)
+      // Verify: Original paths sanitized, then restored to import project path
+      // - Original path (/Users/test/myproject) is NOT preserved
+      // - cwd is restored to the import directory (absolute path)
       const userMsg = importedMessages[0] as UserMessage;
       expect(userMsg.cwd).not.toContain('/Users/test/');
-      expect(userMsg.cwd).toMatch(/^(myproject|\.)/); // Should be relative
+      expect(userMsg.cwd).toBe(importDir); // Restored to import project path
 
       const firstAssistant = importedMessages[1] as AssistantMessage;
       const toolResultContent = firstAssistant.snapshot!.messages[1].content;
