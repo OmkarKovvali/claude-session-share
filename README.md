@@ -1,22 +1,21 @@
 # claude-session-share
 
-> **MCP server for sharing Claude Code sessions via GitHub Gist with automatic privacy protection**
+MCP server for sharing Claude Code sessions via GitHub Gist with automatic privacy protection.
 
-Share your Claude Code conversations effortlessly while keeping your private data safe. This MCP server enables you to export sessions to shareable GitHub Gist links and import them back—all through natural language.
+Share your Claude Code conversations while keeping private data safe. Export sessions to shareable GitHub Gist links and import them back—all through natural language or CLI.
 
 [![npm version](https://badge.fury.io/js/claude-session-share.svg)](https://www.npmjs.com/package/claude-session-share)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## ✨ Features
+## Features
 
-- **🔗 One-Click Sharing** - Export sessions to GitHub Gist with a simple command
-- **🔒 Privacy First** - Automatically strips thinking blocks, sanitizes paths, and redacts secrets
-- **📥 Seamless Import** - Import shared sessions that work exactly like native Claude Code sessions
-- **💬 Natural Language** - Just ask Claude to "share my session" or "import from [link]"
-- **⚡ Slash Commands** - Direct invocation via `/share` and `/import` commands
-- **🔄 Full Compatibility** - Imported sessions appear in `claude --resume` and preserve conversation context
+- **One-Click Sharing** - Export sessions to GitHub Gist with a simple command
+- **Privacy First** - Automatically strips thinking blocks, sanitizes paths, and redacts secrets
+- **Seamless Import** - Import shared sessions that work exactly like native Claude Code sessions
+- **Natural Language** - Just ask Claude to "share my session" or "import from [link]"
+- **Full Compatibility** - Imported sessions appear in `claude --resume` and preserve conversation context
 
-## 📦 Installation
+## Installation
 
 ### Prerequisites
 
@@ -38,11 +37,11 @@ npm install -g claude-session-share
 4. Check the **`gist`** scope
 5. Generate and copy the token
 
-## ⚙️ Configuration
+## Configuration
 
-Add the MCP server to your Claude Code configuration:
+Add the MCP server to your Claude Code configuration.
 
-### Option 1: User Config (Recommended)
+### User Config (Recommended)
 
 Create or edit `~/.claude/mcp.json`:
 
@@ -60,24 +59,23 @@ Create or edit `~/.claude/mcp.json`:
 }
 ```
 
-### Option 2: Project-Specific Config
+### Project-Specific Config
 
 Create `.mcp.json` in your project directory with the same structure.
 
 ### Verify Installation
 
 ```bash
-# Check if the MCP server is recognized
 claude  # Start Claude Code
 # Then type: /mcp
 # You should see "claude-session-share" in the list
 ```
 
-## 🚀 Usage
+## Usage
 
-### Option A: Natural Language (via MCP)
+### Natural Language (via MCP)
 
-In any Claude Code conversation, simply say:
+In any Claude Code conversation:
 
 ```
 "Share my current session to GitHub Gist"
@@ -89,61 +87,13 @@ Claude will:
 3. Upload to a secret (unlisted) GitHub Gist
 4. Return a shareable link
 
-**Example output:**
-```
-✓ Session shared successfully!
-Link: https://gist.github.com/username/abc123...
-
-Share this link with anyone. They can import it with:
-"Import session from https://gist.github.com/username/abc123..."
-```
-
-#### Importing via MCP
-
 To import a shared session:
 
 ```
 "Import this session: https://gist.github.com/username/abc123..."
 ```
 
-Claude will:
-1. Fetch the session from the Gist
-2. Remap UUIDs to avoid conflicts
-3. Write to your local `.claude/projects/` directory
-4. Make it available for resuming
-
-### Option B: Slash Commands (via MCP Prompts)
-
-Claude Code users can invoke commands directly via slash commands:
-
-#### Share Command
-
-Type in any Claude Code conversation:
-```
-/mcp__claude-session-share__share
-```
-
-With specific session:
-```
-/mcp__claude-session-share__share session_path=/path/to/session.jsonl
-```
-
-#### Import Command
-
-```
-/mcp__claude-session-share__import gist_url=https://gist.github.com/user/abc123
-```
-
-With custom project path:
-```
-/mcp__claude-session-share__import gist_url=https://gist.github.com/user/abc123 project_path=/my/project
-```
-
-**Note:** Slash commands are available in Claude Code 0.9.0+. They appear in autocomplete when you type `/mcp`.
-
-### Option C: Command Line (Standalone CLI)
-
-You can also use the CLI directly without Claude Code:
+### Command Line (Standalone CLI)
 
 #### Share a session
 
@@ -165,10 +115,6 @@ npx claude-session-share import https://gist.github.com/user/abc123
 npx claude-session-share import abc123 --project-path /Users/name/project
 ```
 
-**CLI flags:**
-- `--session-path <path>` - Specific session file to share (default: most recent)
-- `--project-path <path>` - Target directory for import (default: current directory)
-
 ### Resuming an Imported Session
 
 ```bash
@@ -177,21 +123,17 @@ claude --resume
 # Select the imported session from the list
 ```
 
-The imported session works exactly like a native Claude Code session—full conversation history, no thinking blocks, perfect privacy.
+Or resume directly with the session ID:
 
-### Three Ways to Use
+```bash
+claude --resume <session-id>
+```
 
-1. **Natural Language** (via MCP tools) - "Share my session"
-2. **Slash Commands** (via MCP prompts) - `/mcp__claude-session-share__share`
-3. **CLI** (standalone) - `npx claude-session-share share`
-
-All three methods use the same underlying implementation and provide identical functionality.
-
-## 🔐 Privacy Protection
+## Privacy Protection
 
 Every shared session is automatically sanitized:
 
-### ✅ What Gets Removed/Sanitized
+### What Gets Removed/Sanitized
 
 - **Thinking Blocks** - Internal reasoning stripped completely
 - **Absolute Paths** - `/Users/you/project/file.ts` → `file.ts`
@@ -199,7 +141,7 @@ Every shared session is automatically sanitized:
 - **Tokens** - Bearer tokens, OAuth tokens → `[REDACTED]`
 - **Secrets** - Environment variables, passwords (key=value format) → `[REDACTED]`
 
-### ✅ What Gets Preserved
+### What Gets Preserved
 
 - Conversation flow and context
 - Code examples and explanations
@@ -211,11 +153,8 @@ Every shared session is automatically sanitized:
 
 - Passwords in connection strings (e.g., `postgresql://user:pass@host/db`) are not detected
 - Secrets in natural language (not key=value format) may not be redacted
-- These tradeoffs prevent false positives on legitimate content
 
-## 📚 MCP Tools Reference
-
-The server provides two MCP tools:
+## MCP Tools Reference
 
 ### `share_session`
 
@@ -233,17 +172,17 @@ Exports the current session to GitHub Gist.
 Imports a session from a GitHub Gist.
 
 **Parameters:**
-- `gistUrl` - GitHub Gist URL (e.g., `https://gist.github.com/user/abc123`)
-- `projectPath` (optional) - Local project directory (defaults to current directory)
+- `gistUrl` - GitHub Gist URL or bare gist ID
+- `projectPath` - Local project directory for import
 
 **Returns:**
 - `sessionPath` - Path to imported session file
 - `sessionId` - New session ID
 - `messageCount` - Number of messages imported
 
-## 🛠️ Development
+## Development
 
-### Clone and Setup
+### Setup
 
 ```bash
 git clone https://github.com/OmkarKovvali/claude-session-share.git
@@ -261,7 +200,7 @@ npm run build
 
 ```bash
 npm test
-# 337 tests with full coverage
+# 420 tests
 ```
 
 ### Project Structure
@@ -270,64 +209,21 @@ npm test
 claude-session-share/
 ├── src/
 │   ├── index.ts                 # MCP server entry point
+│   ├── cli.ts                   # CLI entry point
 │   ├── gist/                    # GitHub Gist integration
 │   ├── sanitization/            # Privacy protection
 │   ├── services/                # Share/import orchestration
 │   ├── session/                 # Session read/write
-│   └── utils/                   # UUID remapping, etc.
+│   └── utils/                   # UUID remapping, path encoding
 ├── dist/                        # Compiled output
-├── .planning/                   # Project planning docs
 └── package.json
 ```
 
-## 🧪 Testing
-
-The project includes comprehensive test coverage:
-
-- **Unit Tests** - All modules tested individually
-- **Integration Tests** - Service orchestration verified
-- **E2E Tests** - Full share→import→resume workflow validated
-- **Real API Tests** - GitHub Gist integration tested with actual API
-
-Run tests:
-```bash
-npm test                    # All tests
-npm test -- session-reader  # Specific test file
-```
-
-## 🤝 Contributing
-
-Contributions welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
-### Code Style
-
-- TypeScript with strict mode
-- ESM modules
-- Functional programming style (immutable transformations)
-- Comprehensive tests for new features
-
-## 📋 Roadmap
-
-- [x] Core share/import functionality
-- [x] Privacy sanitization
-- [x] MCP server integration
-- [x] End-to-end testing
-- [ ] Web interface for browsing shared sessions
-- [ ] Session versioning and updates
-- [ ] Organization/team sharing features
-- [ ] Custom sanitization rules
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### "Not authenticated" Error
 
-Make sure your `GITHUB_TOKEN` is set in the MCP configuration:
+Ensure `GITHUB_TOKEN` is set in MCP configuration:
 ```json
 "env": {
   "GITHUB_TOKEN": "ghp_your_token_here"
@@ -340,12 +236,7 @@ Ensure you're in a directory with an active Claude Code session. Sessions are st
 
 ### Imported Session Doesn't Appear
 
-Check that the session was written to the correct location:
-```bash
-ls -la ~/.claude/projects/*/
-```
-
-Each project directory should have a `.jsonl` file—that's your session.
+After importing, restart Claude Code to refresh the session list. The session file should be in `~/.claude/projects/-{encoded-path}/`.
 
 ### MCP Server Not Listed
 
@@ -353,27 +244,21 @@ Verify your MCP configuration:
 ```bash
 cat ~/.claude/mcp.json
 ```
-
 Then restart Claude Code.
 
-## 📄 License
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes
+4. Push to the branch
+5. Open a Pull Request
+
+## License
 
 MIT © Omkar Kovvali
 
-See [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- Built with [Model Context Protocol](https://modelcontextprotocol.io/)
-- Uses [GitHub Gist API](https://docs.github.com/en/rest/gists)
-- Powered by [Claude Code](https://www.anthropic.com/claude)
-
-## 📞 Support
+## Support
 
 - **Issues**: [GitHub Issues](https://github.com/OmkarKovvali/claude-session-share/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/OmkarKovvali/claude-session-share/discussions)
 - **Email**: okovvali5@gmail.com
-
----
-
-**Made with ❤️ for the Claude Code community**
